@@ -2,9 +2,9 @@ import * as React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import * as routes from './constants/routePaths.js'
 import './App.css'
-import SignUp from './pages/SignUp.js'
-import Login from './pages/Login.js'
-import Homepage from './pages/Homepage.js'
+import SignUp from './pages/SignUp/SignUp.js'
+import Login from './pages/Login/Login.js'
+import Homepage from './pages/Homepage/Homepage.js'
 
 function App () {
   return (
