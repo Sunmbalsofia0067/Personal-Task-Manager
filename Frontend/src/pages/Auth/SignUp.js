@@ -6,27 +6,45 @@ import {
   Group,
   PasswordInput
 } from '@mantine/core'
+import { useForm } from '@mantine/form';
 import { IconEyeCheck, IconEyeOff } from '@tabler/icons'
 
 function SignUp () {
+  const form = useForm({
+    initialValues: { firstName: '', lastName: '', email: '', password: '' , checkbox: false },
+
+    // functions will be used to validate values at corresponding key
+    validate: {
+      firstName: (value) => (value.length < 4 ? 'First name must have at least 4 letters' : null),
+      lastName: (value) => (value.length < 4 ? 'Last name must have at least 4 letters' : null),
+      email: (value) => (/\S+@\S+\.\S+/.test(value) ? null : 'Invalid email'),
+      password: (value) => (value.length < 8 ? 'Password must be 8 character long!' : null),
+      checkbox: (value) => (value === false ? 'Please agree to privacy policy!' : null),
+    },
+  });
+
+  const registerUser=(user)=>{
+    console.log(user);
+  }
+
   return (
     <div className='auth-container'>
       <Paper className='auth-box' shadow='xs' p='xl'>
         <h2 style={{ marginTop: '0px', textAlign: 'center' }}> Sign Up</h2>
-        <form>
+        <form onSubmit={form.onSubmit(registerUser)}>
           <TextInput
             withAsterisk
             label='First Name'
             placeholder='First Name'
             mb={'xs'}
-            //{...form.getInputProps('firstName')}
+            {...form.getInputProps('firstName')}
           />
           <TextInput
             withAsterisk
             label='Last Name'
             placeholder='Last Name'
             mb={'xs'}
-            //{...form.getInputProps('lastName')}
+            {...form.getInputProps('lastName')}
           />
 
           <TextInput
@@ -34,21 +52,22 @@ function SignUp () {
             label='Email'
             placeholder='your@email.com'
             mb={'xs'}
-            //{...form.getInputProps('email')}
+            {...form.getInputProps('email')}
           />
 
           <PasswordInput
             label='Password'
             placeholder='Password'
             visibilityToggleIcon={({ reveal, size }) =>
-              reveal ? <IconEyeOff size={size} /> : <IconEyeCheck size={size} />
+            reveal ? <IconEyeOff size={size} /> : <IconEyeCheck size={size} />
             }
+            {...form.getInputProps('password')}
           />
 
           <Checkbox
             mt='md'
             label='I agree to privacy policy'
-            //{...form.getInputProps('termsOfService', { type: 'checkbox' })}
+            {...form.getInputProps('checkbox')}
           />
 
           <Group position='center' mt='md'>
