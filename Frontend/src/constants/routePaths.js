@@ -1,3 +1,5 @@
 export const homePage = '/'
 export const signUp = '/signup'
 export const login = '/login'
+export const findEmail='/findemail'
+export const resetPass='/resetpass'

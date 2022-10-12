@@ -7,12 +7,11 @@ import {
   PasswordInput
 } from '@mantine/core'
 import { IconEyeCheck, IconEyeOff } from '@tabler/icons'
-import './signup.css'
 
 function SignUp () {
   return (
-    <div className='signup-container'>
-      <Paper className='signup-box' shadow='xs' p='xl'>
+    <div className='auth-container'>
+      <Paper className='auth-box' shadow='xs' p='xl'>
         <h2 style={{ marginTop: '0px', textAlign: 'center' }}> Sign Up</h2>
         <form>
           <TextInput
