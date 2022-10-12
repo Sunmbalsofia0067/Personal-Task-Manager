@@ -1,0 +1,13 @@
+.auth-container{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .auth-box{
+    min-width: 400px;
+    border-radius: 5px;
+  }
+  

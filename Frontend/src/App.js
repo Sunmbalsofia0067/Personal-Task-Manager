@@ -2,9 +2,12 @@ import * as React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import * as routes from './constants/routePaths.js'
 import './App.css'
-import SignUp from './pages/SignUp/SignUp.js'
-import Login from './pages/Login/Login.js'
+// import PasswordReset from './pages/SignUp/PasswordReset.js'
+import SignUp from './pages/Auth/SignUp.js'
+import Login from './pages/Auth/Login.js'
+import FindEmail from './pages/Auth/FindEmail.js'
 import Homepage from './pages/Homepage/Homepage.js'
+import PasswordReset from './pages/Auth/PasswordReset.js'
 
 function App () {
   return (
@@ -13,6 +16,8 @@ function App () {
           <Route path={routes.homePage} element={<Homepage/>} />
             <Route path={routes.signUp} element={<SignUp />}/>
             <Route path={routes.login} element={<Login/>} />
+            <Route path={routes.findEmail} element={<FindEmail/>} />
+            <Route path={routes.resetPass} element={<PasswordReset/>} />
         </Routes>
       </BrowserRouter>
   )
