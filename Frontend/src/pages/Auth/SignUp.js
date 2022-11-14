@@ -6,10 +6,14 @@ import {
   Group,
   PasswordInput
 } from '@mantine/core'
+import {useNavigate} from 'react-router-dom'
 import { useForm } from '@mantine/form';
+import axios from 'axios'
 import { IconEyeCheck, IconEyeOff } from '@tabler/icons'
 
 function SignUp () {
+  const navigate = useNavigate();
+
   const form = useForm({
     initialValues: { firstName: '', lastName: '', email: '', password: '' , checkbox: false },
 
@@ -23,8 +27,17 @@ function SignUp () {
     },
   });
 
-  const registerUser=(user)=>{
-    console.log(user);
+  const registerUser=async (user)=>{
+    try{
+      await axios.post('http://localhost:3001/signup', user)
+      // console.log(user)
+      form.setValues({ firstName: '', lastName: '', email: '', password: '' })
+      form.setFieldValue('checkbox', false);
+      // Redirect to login page
+      navigate('/login')
+    }catch(err){
+      console.log("Something went wrong!")
+    }
   }
 
   return (

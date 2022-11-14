@@ -6,13 +6,14 @@ const bcrypt = require('bcrypt')
 const Tasks = require('./database/models/tasks')
 const jwt = require('jsonwebtoken')
 const auth = require('./middlewares/auth')
+const cors = require('cors')
 
 dbSetup()
 
 const SECRET_KEY = 'USERSAPI'
 const app = express()
 app.use(bodyParser.json())
-
+app.use(cors())
 const SERVER_PORT = 3001
 
 app.get('/', (req, res) => {
@@ -41,8 +42,9 @@ app.get('/tasks/:taskId', async (req, res) => {
 })
 
 //Inserting user to database
-app.post('/signup', async (req, res) => {
+app.post('/signup', async (req, res, next) => {
   try {
+    console.log(req.body)
     const { firstName, lastName, email, password } = req.body
     const saltRounds = 10
     const hashedPassword = await bcrypt.hash(password, saltRounds)
@@ -60,7 +62,7 @@ app.post('/signup', async (req, res) => {
     console.log(err)
     res.status(500).send('Unable to add user')
   }
-})
+}, )
 
 //Login of user after validating from the database
 app.post('/login', async (req, res) => {
