@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-
+import { Text, Paper, Badge } from '@mantine/core'
 const grid = 8
 
 const getItems = (count, offset = 0) =>
   Array.from({ length: count }, (v, k) => k).map(k => ({
-    id: `item-${Math.random()*100000 + offset}`,
+    id: `item-${Math.random() * 100000 + offset}`,
     content: `item ${k + offset}`
   }))
 
@@ -52,21 +52,40 @@ const move = (source, destination, droppableSource, droppableDestination) => {
 
 function Homepage () {
   const [items, setItems] = useState(getItems(10))
-  const [selectedItems, setSelectedItems] = useState(getItems(5))
+  const [doneItems, setDoneItems] = useState(getItems(5))
+  const [inProgressItems, setInProgessItems] = useState(getItems(6))
 
   const id2List = {
     todos: 'items',
-    done: 'selectedItems'
+    done: 'done',
+    inProgress: 'inProgress'
   }
-  const getList = id => {
+  const getListInfo = id => {
+    const listInfo = {}
     const list = id2List[id]
-    return list === 'items' ? items : selectedItems
+    switch (list) {
+      case 'items':
+        listInfo['dataArr'] = items
+        listInfo['updateData'] = setItems
+        break
+      case 'done':
+        listInfo['dataArr'] = doneItems
+        listInfo['updateData'] = setDoneItems
+        break
+      case 'inProgress':
+        listInfo['dataArr'] = inProgressItems
+        listInfo['updateData'] = setInProgessItems
+        break
+      default:
+    }
+
+    return listInfo
   }
 
   const onDragEnd = result => {
-    const { source, destination } = result;
+    const { source, destination } = result
 
-    console.log(result);
+    console.log(result)
 
     // dropped outside the list
     if (!destination) {
@@ -75,89 +94,150 @@ function Homepage () {
 
     if (source.droppableId === destination.droppableId) {
       const items = reorder(
-        getList(source.droppableId),
+        getListInfo(source.droppableId).dataArr,
         source.index,
         destination.index
       )
-
-      if(source.droppableId === 'todos'){
-        setItems(items)
-      }
-
-      if (source.droppableId === 'done') {
-        setSelectedItems(items)
-      }
+      getListInfo(source.droppableId).updateData(items)
     } else {
       const result = move(
-        getList(source.droppableId),
-        getList(destination.droppableId),
+        getListInfo(source.droppableId).dataArr,
+        getListInfo(destination.droppableId),
         source,
         destination
       )
 
-      console.log(result);
+      console.log(result)
       setItems(result.todos)
-      setSelectedItems(result.done)
+      setDoneItems(result.done)
+      setInProgessItems(result.inProgress)
     }
   }
+
   return (
-    <div style={{ display: 'flex' }}>
-    <DragDropContext onDragEnd={onDragEnd}>
-    <Droppable droppableId='todos'>
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          style={getListStyle(snapshot.isDraggingOver)}
-        >
-          {items.map((item, index) => (
-            <Draggable key={item.id} draggableId={item.id} index={index}>
+    <div>
+      <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex' }}></div>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div>
+            <Paper shadow='xl' radius='lg' p='xs' withBorder>
+              <Text>
+                {' '}
+                TODOs <Badge>{items.length}</Badge>{' '}
+              </Text>
+            </Paper>
+            <Droppable droppableId='todos'>
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  style={getItemStyle(
-                    snapshot.isDragging,
-                    provided.draggableProps.style
-                  )}
+                  style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {item.content}
+                  {items.map((item, index) => (
+                    <Draggable
+                      key={item.id}
+                      draggableId={item.id}
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(
+                            snapshot.isDragging,
+                            provided.draggableProps.style
+                          )}
+                        >
+                          {item.content}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
                 </div>
               )}
-            </Draggable>
-          ))}
-          {provided.placeholder}
-        </div>
-      )}
-    </Droppable>
-    <Droppable droppableId='done'>
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          style={getListStyle(snapshot.isDraggingOver)}
-        >
-          {selectedItems.map((item, index) => (
-            <Draggable key={item.id} draggableId={item.id} index={index}>
+            </Droppable>
+          </div>
+          <div>
+            <Paper shadow='xl' radius='lg' p='xs' withBorder>
+              <Text>
+                {' '}
+                In-progress <Badge>{inProgressItems.length}</Badge>{' '}
+              </Text>
+            </Paper>
+            <Droppable droppableId='inProgress'>
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  style={getItemStyle(
-                    snapshot.isDragging,
-                    provided.draggableProps.style
-                  )}
+                  style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {item.content}
+                  {inProgressItems.map((item, index) => (
+                    <Draggable
+                      key={item.id}
+                      draggableId={item.id}
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(
+                            snapshot.isDragging,
+                            provided.draggableProps.style
+                          )}
+                        >
+                          {item.content}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
                 </div>
               )}
-            </Draggable>
-          ))}
-          {provided.placeholder}
-        </div>
-      )}
-    </Droppable>
-  </DragDropContext>
+            </Droppable>
+          </div>
+          <div>
+            <Paper shadow='xl' radius='lg' p='xs' withBorder>
+              <Text>
+                {' '}
+                Completed <Badge>{doneItems.length}</Badge>{' '}
+              </Text>
+            </Paper>
+            <Droppable droppableId='done'>
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  style={getListStyle(snapshot.isDraggingOver)}
+                >
+                  {doneItems.map((item, index) => (
+                    <Draggable
+                      key={item.id}
+                      draggableId={item.id}
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(
+                            snapshot.isDragging,
+                            provided.draggableProps.style
+                          )}
+                        >
+                          {item.content}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </div>
+        </DragDropContext>
+      </div>
     </div>
   )
 }
