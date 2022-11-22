@@ -27,19 +27,18 @@ app.get('/users', async (req, res) => {
 })
 
 //Getting all the tasks
-app.get('/tasks', auth, async (req, res) => {
-  const userId = req.user.id
+app.get('/tasks', auth , async (req, res) => {
+  const userId = req.user.id;
   const filteredTask = await Tasks.query().where('userId', userId)
-
   return res.send(filteredTask)
 })
 
 //Getting a task to update
-app.get('/tasks/:taskId', async (req, res) => {
-  const { taskId } = req.params
-  const result = await Tasks.query().where('id', taskId)
-  return res.send(result)
-})
+// app.get('/tasks', async (req, res) => {
+//   const { taskId } = req.params
+//   const result = await Tasks.query().where('id', taskId)
+//   return res.send(result)
+// })
 
 //Inserting user to database
 app.post('/signup', async (req, res, next) => {
@@ -88,18 +87,18 @@ app.post('/newtask', auth, async (req, res) => {
   const { title, description } = req.body
   const userId = req.user.id
   try {
-    await Tasks.query().insert({
+    const newTask= await Tasks.query().insert({
       title: title,
       description: description,
       userId: userId
     })
-    res.send('Task Added Successfully')
+    res.send(newTask)
   } catch (err) {
     console.log(err)
     res.status(500).send('Unable to add Task')
   }
 })
-
+//Updating task based on ID
 app.patch('/tasks/:taskId', auth, async (req, res) => {
   try {
     const { taskId } = req.params
