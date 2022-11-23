@@ -12,7 +12,7 @@ import {
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconChevronDown } from '@tabler/icons'
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
@@ -80,29 +80,30 @@ export function HeaderMenuColored (props) {
   const [openModel, setOpenModal] = useState(false)
   const [isValidData, setIsValidData] = useState(false)
   const [newTaskData, setNewTaskData] = useState({
-    title: "",
-    description: ""
+    title: '',
+    description: ''
   })
   const navigate = useNavigate()
 
-  
-
-  const AddTask = async() => {
+  const AddTask = async () => {
     const token = localStorage.getItem('access_token')
-    const newData = await axios.post('http://localhost:3001/newtask', newTaskData, {
-      headers: {
-        authorization: `Bearer ${token}`
+    const newData = await axios.post(
+      'http://localhost:3001/newtask',
+      newTaskData,
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
       }
-    });
+    )
     setNewTaskData({
-      title: "",
-      description: ""
+      title: '',
+      description: ''
     })
     props.updateUiTodos(newData.data)
     setOpenModal(false)
-    
   }
-  
+
   const items = links.map(link => {
     const menuItems = link.links?.map(item => (
       <Menu.Item key={item.link}>{item.label}</Menu.Item>
@@ -152,12 +153,12 @@ export function HeaderMenuColored (props) {
         {link.label}
       </a>
     )
-  });
+  })
 
-  useEffect(()=>{
-   if((newTaskData.title.length > 6) && (newTaskData.description.length > 6)) {
-    setIsValidData(true)
-   }
+  useEffect(() => {
+    if (newTaskData.title.length > 6 && newTaskData.description.length > 6) {
+      setIsValidData(true)
+    }
   }, [newTaskData.title, newTaskData.description])
 
   return (
@@ -167,37 +168,48 @@ export function HeaderMenuColored (props) {
           opened={openModel}
           onClose={() => {
             setNewTaskData({
-              title: "",
-              description: ""
+              title: '',
+              description: ''
             })
             setOpenModal(false)
           }}
           title=<h3>Add Task</h3>
         >
-          <Textarea placeholder='Title' label='Title' withAsterisk 
-          value={newTaskData.title} 
-          onChange={(event)=>{
-            const value = event.target.value;
-            setNewTaskData({
-              ...newTaskData, title:value
-            })
-          }}  />
+          <Textarea
+            placeholder='Title'
+            label='Title'
+            withAsterisk
+            value={newTaskData.title}
+            onChange={event => {
+              const value = event.target.value
+              setNewTaskData({
+                ...newTaskData,
+                title: value
+              })
+            }}
+          />
           <Textarea
             placeholder='Write your text here.'
             label='Description'
             withAsterisk
             value={newTaskData.description}
-            onChange={(event)=>{
-              const value = event.target.value;
+            onChange={event => {
+              const value = event.target.value
               setNewTaskData({
-                ...newTaskData, description:value
+                ...newTaskData,
+                description: value
               })
-            }} 
+            }}
           />
-          <Button mt='sm' type='submit' radius='md' disabled={!isValidData} onClick={AddTask}>
+          <Button
+            mt='sm'
+            type='submit'
+            radius='md'
+            disabled={!isValidData}
+            onClick={AddTask}
+          >
             Add
           </Button>
-          {/* Modal content */}
         </Modal>
         <div className={classes.inner}>
           <h1>Task Manager</h1>

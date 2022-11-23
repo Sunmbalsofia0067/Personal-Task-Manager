@@ -33,13 +33,6 @@ app.get('/tasks', auth , async (req, res) => {
   return res.send(filteredTask)
 })
 
-//Getting a task to update
-// app.get('/tasks', async (req, res) => {
-//   const { taskId } = req.params
-//   const result = await Tasks.query().where('id', taskId)
-//   return res.send(result)
-// })
-
 //Inserting user to database
 app.post('/signup', async (req, res, next) => {
   try {

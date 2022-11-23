@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { Text, Paper, Badge, Modal, Textarea, Button } from '@mantine/core'
 import { HeaderMenuColored } from '../../components/Header'
+import { isEqual } from 'lodash'
 import axios from 'axios'
 const grid = 8
 
@@ -57,8 +58,9 @@ function Homepage () {
   const [doneItems, setDoneItems] = useState(getItems(0))
   const [inProgressItems, setInProgessItems] = useState(getItems(0))
   const [openModel, setOpenModal] = useState(false)
-  const [title, setTitle] = useState('gjhghjg')
-  const [description, setDescription] = useState('')
+  const [taskToUpdate, setTaskToUpdate] = useState({})
+  const [mainTask, setMainTask] = useState({})
+  const [isValidInput, setIsValidInput] = useState(false)
 
   useEffect(() => {
     const getAllTasks = async userId => {
@@ -143,22 +145,83 @@ function Homepage () {
       })
     }
   }
-  const updateUiTodos =(data) =>{
-   setItems([...items, data])
+  const updateUiTodos = data => {
+    setItems([...items, data])
   }
+
+  const UpdateTask = async () => {
+    const taskId = taskToUpdate.id
+    const token = localStorage.getItem('access_token')
+    const updatedTaskResponse = await axios.patch(
+      `http://localhost:3001/tasks/${taskId}`,
+      taskToUpdate,
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      }
+    )
+    const updatedTask = updatedTaskResponse.data
+
+    const updatedTaskStatus = updatedTask.status
+    const updateUI = {
+      arrayToUpdate: [],
+      updateArrayFunction: () => {}
+    }
+    if (updatedTaskStatus === 'done') {
+      updateUI.arrayToUpdate = doneItems
+      updateUI.updateArrayFunction = setDoneItems
+    } else if (updatedTaskStatus === 'In-Progress') {
+      updateUI.arrayToUpdate = inProgressItems
+      updateUI.updateArrayFunction = setInProgessItems
+    } else {
+      updateUI.arrayToUpdate = items
+      updateUI.updateArrayFunction = setItems
+    }
+
+    const arrayIndexToUpdate = updateUI.arrayToUpdate.findIndex((element)=>((element.id === updatedTask.id)))
+    updateUI.arrayToUpdate.splice(arrayIndexToUpdate,1, updatedTask)
+    updateUI.updateArrayFunction([...updateUI.arrayToUpdate])
+    setOpenModal(false)
+  }
+
+  useEffect(() => {
+    if (!isEqual(taskToUpdate, mainTask)) {
+      console.log('In Use effect with dependency array ')
+      setIsValidInput(true)
+    } else setIsValidInput(false)
+  }, [taskToUpdate.title, taskToUpdate.description])
 
   return (
     <div>
       <HeaderMenuColored updateUiTodos={updateUiTodos} items={items} />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Modal opened={openModel} onClose={() => setOpenModal(false)}>
-          <Textarea label='Title' value={title} onChange={() => {}} />
+          <Textarea
+            label='Title'
+            value={taskToUpdate.title}
+            onChange={event => {
+              const value = event.target.value
+              setTaskToUpdate({ ...taskToUpdate, title: value })
+              setIsValidInput(true)
+            }}
+          />
           <Textarea
             label='Description'
-            value={description}
-            onChange={() => {}}
+            value={taskToUpdate.description}
+            onChange={event => {
+              const value = event.target.value
+              setTaskToUpdate({ ...taskToUpdate, description: value })
+              setIsValidInput(true)
+            }}
           />
-          <Button mt='sm' type='submit' radius='md' disabled={true}>
+          <Button
+            mt='sm'
+            type='submit'
+            radius='md'
+            disabled={!isValidInput}
+            onClick={UpdateTask}
+          >
             Save
           </Button>
         </Modal>
@@ -200,8 +263,8 @@ function Homepage () {
                           )}
                           onClick={event => {
                             event.preventDefault()
-                            setTitle(item.title)
-                            setDescription(item.description)
+                            setTaskToUpdate(item)
+                            setMainTask(item)
                             setOpenModal(true)
                           }}
                         >
@@ -251,8 +314,8 @@ function Homepage () {
                           )}
                           onClick={event => {
                             event.preventDefault()
-                            setTitle(item.title)
-                            setDescription(item.description)
+                            setTaskToUpdate(item)
+                            setMainTask(item)
                             setOpenModal(true)
                           }}
                         >
@@ -302,8 +365,8 @@ function Homepage () {
                           )}
                           onClick={event => {
                             event.preventDefault()
-                            setTitle(item.title)
-                            setDescription(item.description)
+                            setTaskToUpdate(item)
+                            setMainTask(item)
                             setOpenModal(true)
                           }}
                         >
