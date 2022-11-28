@@ -30,7 +30,6 @@ function SignUp () {
   const registerUser=async (user)=>{
     try{
       await axios.post('http://localhost:3001/signup', user)
-      // console.log(user)
       form.setValues({ firstName: '', lastName: '', email: '', password: '' })
       form.setFieldValue('checkbox', false);
       // Redirect to login page

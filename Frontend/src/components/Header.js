@@ -7,11 +7,19 @@ import {
   Button,
   Group,
   Center,
+  TextInput,
+  ActionIcon,
   Burger,
+  useMantineTheme,
   Container
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { IconChevronDown } from '@tabler/icons'
+import {
+  IconChevronDown,
+  IconSearch,
+  IconArrowRight,
+  IconArrowLeft
+} from '@tabler/icons'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -55,6 +63,12 @@ const useStyles = createStyles(theme => ({
     fontWeight: 500
   },
 
+  search: {
+    [theme.fn.smallerThan('sm')]: {
+      display: 'none'
+    }
+  },
+
   linkLabel: {
     marginRight: 5
   }
@@ -83,6 +97,7 @@ export function HeaderMenuColored (props) {
     title: '',
     description: ''
   })
+  const theme = useMantineTheme()
   const navigate = useNavigate()
 
   const AddTask = async () => {
@@ -213,7 +228,34 @@ export function HeaderMenuColored (props) {
         </Modal>
         <div className={classes.inner}>
           <h1>Task Manager</h1>
-          <Group spacing={10} className={classes.links}>
+          <TextInput
+          icon={<IconSearch size={18} stroke={1.5} />}
+          radius='xl'
+          size='md'
+          value = {props.searchBarText}
+          onChange={(event)=>{
+            const value = event.target.value
+            props.setSearchBarText(value)
+          }}
+          // rightSection={
+          //   <ActionIcon
+          //     size={32}
+          //     radius='xl'
+          //     color={theme.primaryColor}
+          //     variant='filled'
+          //   >
+          //     {theme.dir === 'ltr' ? (
+          //       <IconArrowRight size={18} stroke={1.5} />
+          //     ) : (
+          //       <IconArrowLeft size={18} stroke={1.5} />
+          //     )}
+          //   </ActionIcon>
+          // }
+          placeholder='Search Task'
+          rightSectionWidth={40}
+          {...props}
+        />
+          <Group spacing={5} className={classes.links}>
             {items}
           </Group>
           <Burger

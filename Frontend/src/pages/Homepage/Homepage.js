@@ -61,6 +61,8 @@ function Homepage () {
   const [taskToUpdate, setTaskToUpdate] = useState({})
   const [mainTask, setMainTask] = useState({})
   const [isValidInput, setIsValidInput] = useState(false)
+  const [searchBarText, setSearchBarText] = useState('')
+
 
   useEffect(() => {
     const getAllTasks = async userId => {
@@ -149,6 +151,11 @@ function Homepage () {
     setItems([...items, data])
   }
 
+  function filteredProduct(product){
+    if(product.title.toLowerCase().includes(searchBarText.toLocaleLowerCase())){
+        return product
+    }
+}
   const UpdateTask = async () => {
     const taskId = taskToUpdate.id
     const token = localStorage.getItem('access_token')
@@ -187,14 +194,17 @@ function Homepage () {
 
   useEffect(() => {
     if (!isEqual(taskToUpdate, mainTask)) {
-      console.log('In Use effect with dependency array ')
       setIsValidInput(true)
     } else setIsValidInput(false)
   }, [taskToUpdate.title, taskToUpdate.description])
 
+
+  const filteredItems = items.filter(filteredProduct)
+  const filteredInProgressItems = inProgressItems.filter(filteredProduct)
+  const filteredDoneItems = doneItems.filter(filteredProduct)
   return (
     <div>
-      <HeaderMenuColored updateUiTodos={updateUiTodos} items={items} />
+      <HeaderMenuColored searchBarText={searchBarText} setSearchBarText={setSearchBarText} updateUiTodos={updateUiTodos} items={items} />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Modal opened={openModel} onClose={() => setOpenModal(false)}>
           <Textarea
@@ -237,7 +247,7 @@ function Homepage () {
             >
               <Text>
                 {' '}
-                TODOs <Badge>{items.length}</Badge>{' '}
+                TODOs <Badge>{filteredItems.length}</Badge>{' '}
               </Text>
             </Paper>
             <Droppable droppableId='todos'>
@@ -246,7 +256,7 @@ function Homepage () {
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {items.map((item, index) => (
+                  {filteredItems.map((item, index) => (
                     <Draggable
                       key={item.id}
                       draggableId={`${item.id}`}
@@ -288,7 +298,7 @@ function Homepage () {
             >
               <Text>
                 {' '}
-                In-progress <Badge>{inProgressItems.length}</Badge>{' '}
+                In-progress <Badge>{filteredInProgressItems.length}</Badge>{' '}
               </Text>
             </Paper>
             <Droppable droppableId='inProgress'>
@@ -297,7 +307,7 @@ function Homepage () {
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {inProgressItems.map((item, index) => (
+                  {filteredInProgressItems.map((item, index) => (
                     <Draggable
                       key={item.id}
                       draggableId={`${item.id}`}
@@ -339,7 +349,7 @@ function Homepage () {
             >
               <Text>
                 {' '}
-                Completed <Badge>{doneItems.length}</Badge>{' '}
+                Completed <Badge>{filteredDoneItems.length}</Badge>{' '}
               </Text>
             </Paper>
             <Droppable droppableId='done'>
@@ -348,7 +358,7 @@ function Homepage () {
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {doneItems.map((item, index) => (
+                  {filteredDoneItems.map((item, index) => (
                     <Draggable
                       key={item.id}
                       draggableId={`${item.id}`}
