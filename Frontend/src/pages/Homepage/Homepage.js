@@ -63,7 +63,6 @@ function Homepage () {
   const [isValidInput, setIsValidInput] = useState(false)
   const [searchBarText, setSearchBarText] = useState('')
 
-
   useEffect(() => {
     const getAllTasks = async userId => {
       const token = localStorage.getItem('access_token')
@@ -127,7 +126,43 @@ function Homepage () {
     if (!destination) {
       return
     }
+    const idOfItemToBeChanged = source.droppableId
+    const idOfItemToChangeWith = destination.droppableId
 
+    if (idOfItemToBeChanged === 'todos') {
+      const desiredItem = items[source.index]
+      if (idOfItemToChangeWith === 'todos') {
+        desiredItem.status = 'pending'
+      } else if (idOfItemToChangeWith === 'inProgress') {
+        desiredItem.status = 'In-Progress'
+      } else {
+        desiredItem.status = 'done'
+      }
+      updateTaskHandler(desiredItem)
+    } else if (idOfItemToBeChanged === 'inProgress') {
+      const desiredItem = inProgressItems[source.index]
+      if (idOfItemToChangeWith === 'todos') {
+        desiredItem.status = 'pending'
+      } else if (idOfItemToChangeWith === 'inProgress') {
+        desiredItem.status = 'inProgress'
+      } else {
+        desiredItem.status = 'done'
+      }
+      updateTaskHandler(desiredItem)
+    } else {
+      const desiredItem = doneItems[source.index]
+      if (idOfItemToChangeWith === 'todos') {
+        desiredItem.status = 'pending'
+      } else if (idOfItemToChangeWith === 'inProgress') {
+        desiredItem.status = 'In-Progress'
+      } else {
+        desiredItem.status = 'done'
+      }
+      console.log(desiredItem)
+      updateTaskHandler(desiredItem)
+    }
+
+    console.log(idOfItemToBeChanged, idOfItemToChangeWith)
     if (source.droppableId === destination.droppableId) {
       const items = reorder(
         getListInfo(source.droppableId).dataArr,
@@ -151,25 +186,33 @@ function Homepage () {
     setItems([...items, data])
   }
 
-  function filteredProduct(product){
-    if(product.title.toLowerCase().includes(searchBarText.toLocaleLowerCase())){
-        return product
+  function filteredProduct (product) {
+    if (
+      product.title.toLowerCase().includes(searchBarText.toLocaleLowerCase())
+    ) {
+      return product
     }
-}
-  const UpdateTask = async () => {
-    const taskId = taskToUpdate.id
+  }
+
+  const updateTaskHandler = async updatedTask => {
+    const taskId = updatedTask.id
     const token = localStorage.getItem('access_token')
-    const updatedTaskResponse = await axios.patch(
+    const taskResponse = await axios.patch(
       `http://localhost:3001/tasks/${taskId}`,
-      taskToUpdate,
+      updatedTask,
       {
         headers: {
           authorization: `Bearer ${token}`
         }
       }
     )
-    const updatedTask = updatedTaskResponse.data
 
+    return taskResponse
+  }
+  const UpdateTask = async () => {
+    const updatedTaskResponse = updateTaskHandler(taskToUpdate)
+
+    const updatedTask = updatedTaskResponse.data
     const updatedTaskStatus = updatedTask.status
     const updateUI = {
       arrayToUpdate: [],
@@ -186,8 +229,10 @@ function Homepage () {
       updateUI.updateArrayFunction = setItems
     }
 
-    const arrayIndexToUpdate = updateUI.arrayToUpdate.findIndex((element)=>((element.id === updatedTask.id)))
-    updateUI.arrayToUpdate.splice(arrayIndexToUpdate,1, updatedTask)
+    const arrayIndexToUpdate = updateUI.arrayToUpdate.findIndex(
+      element => element.id === updatedTask.id
+    )
+    updateUI.arrayToUpdate.splice(arrayIndexToUpdate, 1, updatedTask)
     updateUI.updateArrayFunction([...updateUI.arrayToUpdate])
     setOpenModal(false)
   }
@@ -198,13 +243,17 @@ function Homepage () {
     } else setIsValidInput(false)
   }, [taskToUpdate.title, taskToUpdate.description])
 
-
   const filteredItems = items.filter(filteredProduct)
   const filteredInProgressItems = inProgressItems.filter(filteredProduct)
   const filteredDoneItems = doneItems.filter(filteredProduct)
   return (
     <div>
-      <HeaderMenuColored searchBarText={searchBarText} setSearchBarText={setSearchBarText} updateUiTodos={updateUiTodos} items={items} />
+      <HeaderMenuColored
+        searchBarText={searchBarText}
+        setSearchBarText={setSearchBarText}
+        updateUiTodos={updateUiTodos}
+        items={items}
+      />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Modal opened={openModel} onClose={() => setOpenModal(false)}>
           <Textarea

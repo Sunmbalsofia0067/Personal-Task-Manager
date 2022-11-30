@@ -8,7 +8,6 @@ import {
   Group,
   Center,
   TextInput,
-  ActionIcon,
   Burger,
   useMantineTheme,
   Container
@@ -17,8 +16,6 @@ import { useDisclosure } from '@mantine/hooks'
 import {
   IconChevronDown,
   IconSearch,
-  IconArrowRight,
-  IconArrowLeft
 } from '@tabler/icons'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -237,20 +234,6 @@ export function HeaderMenuColored (props) {
             const value = event.target.value
             props.setSearchBarText(value)
           }}
-          // rightSection={
-          //   <ActionIcon
-          //     size={32}
-          //     radius='xl'
-          //     color={theme.primaryColor}
-          //     variant='filled'
-          //   >
-          //     {theme.dir === 'ltr' ? (
-          //       <IconArrowRight size={18} stroke={1.5} />
-          //     ) : (
-          //       <IconArrowLeft size={18} stroke={1.5} />
-          //     )}
-          //   </ActionIcon>
-          // }
           placeholder='Search Task'
           rightSectionWidth={40}
           {...props}
