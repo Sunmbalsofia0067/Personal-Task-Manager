@@ -9,6 +9,8 @@ import FindEmail from './pages/Auth/FindEmail.js'
 import ProtectedRoute from './components/ProtectedRoute.js'
 import Homepage from './pages/Homepage/Homepage.js'
 import PasswordReset from './pages/Auth/PasswordReset.js'
+import CheckAuth from './components/CheckAuth.js'
+
 function App () {
   return (
       <BrowserRouter>
@@ -18,10 +20,26 @@ function App () {
             <Homepage/>
           </ProtectedRoute>
         } />
-            <Route path={routes.signUp} element={<SignUp />}/>
-            <Route path={routes.login} element={<Login/>} />
-            <Route path={routes.findEmail} element={<FindEmail/>} />
-            <Route path={routes.resetPass} element={<PasswordReset/>} />
+        <Route path={routes.signUp} element={
+          <CheckAuth>
+            <SignUp/>
+          </CheckAuth>
+        } />
+        <Route path={routes.login} element={
+          <CheckAuth>
+            <Login/>
+          </CheckAuth>
+        } />
+        <Route path={routes.findEmail}  element={
+          <CheckAuth>
+            <FindEmail/>
+          </CheckAuth>
+        } />
+        <Route path={routes.resetPass} element={
+          <CheckAuth>
+            <PasswordReset/>
+          </CheckAuth>
+        } />
         </Routes>
       </BrowserRouter>
   )
