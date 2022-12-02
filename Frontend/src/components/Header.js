@@ -12,6 +12,7 @@ import {
   useMantineTheme,
   Container
 } from '@mantine/core'
+import { DatePicker } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks'
 import {
   IconChevronDown,
@@ -213,6 +214,7 @@ export function HeaderMenuColored (props) {
               })
             }}
           />
+          <DatePicker label= 'Complete by: ' excludeDate={(date) => date.getDay() === 0 || date.getDay() === 6} />
           <Button
             mt='sm'
             type='submit'

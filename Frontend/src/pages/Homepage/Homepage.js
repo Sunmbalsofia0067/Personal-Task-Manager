@@ -4,6 +4,7 @@ import { Text, Paper, Badge, Modal, Textarea, Button } from '@mantine/core'
 import { HeaderMenuColored } from '../../components/Header'
 import { isEqual } from 'lodash'
 import axios from 'axios'
+import { DatePicker } from '@mantine/dates'
 const grid = 8
 
 const getItems = (count, offset = 0) =>
@@ -274,6 +275,7 @@ function Homepage () {
               setIsValidInput(true)
             }}
           />
+          <DatePicker label= 'Complete by:' excludeDate={(date) => date.getDay() === 0 || date.getDay() === 6} />
           <Button
             mt='sm'
             type='submit'

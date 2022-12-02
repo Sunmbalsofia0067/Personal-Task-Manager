@@ -7,6 +7,8 @@ const Tasks = require('./database/models/tasks')
 const jwt = require('jsonwebtoken')
 const auth = require('./middlewares/auth')
 const cors = require('cors')
+const sendEmail = require('./utils')
+require('dotenv').config()
 
 dbSetup()
 
@@ -17,6 +19,7 @@ app.use(cors())
 const SERVER_PORT = 3001
 
 app.get('/', (req, res) => {
+  console.log(process.env.SENDGRID_API_KEY)
   res.send('Hello from the other side.')
 })
 
@@ -27,8 +30,8 @@ app.get('/users', async (req, res) => {
 })
 
 //Getting all the tasks
-app.get('/tasks', auth , async (req, res) => {
-  const userId = req.user.id;
+app.get('/tasks', auth, async (req, res) => {
+  const userId = req.user.id
   const filteredTask = await Tasks.query().where('userId', userId)
   return res.send(filteredTask)
 })
@@ -54,7 +57,7 @@ app.post('/signup', async (req, res, next) => {
     console.log(err)
     res.status(500).send('Unable to add user')
   }
-}, )
+})
 
 //Login of user after validating from the database
 app.post('/login', async (req, res) => {
@@ -80,7 +83,7 @@ app.post('/newtask', auth, async (req, res) => {
   const { title, description } = req.body
   const userId = req.user.id
   try {
-    const newTask= await Tasks.query().insert({
+    const newTask = await Tasks.query().insert({
       title: title,
       description: description,
       userId: userId
@@ -107,6 +110,22 @@ app.patch('/tasks/:taskId', auth, async (req, res) => {
       return res.status(400).send('Task could not be found.')
     }
     return res.send(updatedTask)
+  } catch (err) {
+    console.log(err)
+    res.status(500).send('Something went wrong!')
+  }
+})
+// Getting user matched to the email
+app.post('/users/sendpasslink', async (req, res) => {
+  try {
+    const { email } = req.body
+    const user = await Users.query().where('email', email).first()
+
+    if (user) {
+      // TODO: send email here
+      sendEmail()
+      res.send('Sending password reset link through email.')
+    } else res.status(400).send('User not Found!')
   } catch (err) {
     console.log(err)
     res.status(500).send('Something went wrong!')

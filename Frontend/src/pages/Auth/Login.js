@@ -12,7 +12,6 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 function Login () {
   const navigate = useNavigate()
-  // const [isLggedIn, setIsLoggedIn] = useState(null)
 
   const form = useForm({
     initialValues: { email: '', password: '' },
@@ -33,7 +32,6 @@ function Login () {
         localStorage.setItem('access_token', token)
 
         localStorage.setItem('user',  JSON.stringify(res.data.userData))
-        // setIsLoggedIn(true)
         navigate('/')
       }
     } catch (err) {
@@ -63,7 +61,11 @@ function Login () {
             {...form.getInputProps('password')}
           />
 
-          <NavLink label='Forgot Passwrord?'></NavLink>
+          <NavLink label='Forgot Passwrord?' 
+          // onClick={
+          //   navigate('/findemail')
+          // }
+          ></NavLink>
 
           <Group position='center' mt='md'>
             <Button type='submit'>Login</Button>

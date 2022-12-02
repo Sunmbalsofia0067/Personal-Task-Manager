@@ -1,5 +1,6 @@
 import { Button, Paper, Group, PasswordInput } from '@mantine/core'
 import { IconEyeCheck, IconEyeOff } from '@tabler/icons'
+// import FindEmail from './FindEmail'
 
 function PasswordReset () {
   return (
