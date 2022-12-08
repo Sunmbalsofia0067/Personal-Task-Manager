@@ -75,7 +75,31 @@ app.post('/login', async (req, res) => {
   }
   const token = jwt.sign(userData.email, SECRET_KEY)
   delete userData.password
-  return res.send({ userData, token })
+  return res.send({ userData, token})
+})
+
+//password reset API
+app.patch('/resetPass', async (req, res) => {
+  const { password, reset_token } = req.body
+  const userId = jwt.verify(reset_token, SECRET_KEY)
+  try {
+    const user = await Users.query().where('id', userId).first()
+    if (user) {
+      //Update password in Db after encrypting
+      const saltRounds = 10
+      const hashedPassword = await bcrypt.hash(password, saltRounds)
+      const numUpdated = await Users.query().findById(userId).patch({
+        password: hashedPassword
+      })
+      res.status(204).send("Password Updated Successfully!")
+    } else {
+      // user not found
+      return res.status(400).send('Bad request!')
+    }
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send('Something went wrong')
+  }
 })
 
 //Adding new Task to database
@@ -122,8 +146,22 @@ app.post('/users/sendpasslink', async (req, res) => {
     const user = await Users.query().where('email', email).first()
 
     if (user) {
+      // console.log(user.id)
+      const userId = user.id
+      const token = jwt.sign(userId, SECRET_KEY)
+      console.log(token)
+      const passwordResetLink = `http://localhost:3000/resetpass?reset_token=${token}`
+
+      const mailBody = `
+      Hi ${user.first_name + ' ' + user.last_name},
+      Click <a href=${passwordResetLink}>Here</a> to reset password here
+      `
       // TODO: send email here
-      sendEmail()
+      sendEmail({
+        body: mailBody,
+        subject: 'Password Reset Link',
+        to: email
+      })
       res.send('Sending password reset link through email.')
     } else res.status(400).send('User not Found!')
   } catch (err) {

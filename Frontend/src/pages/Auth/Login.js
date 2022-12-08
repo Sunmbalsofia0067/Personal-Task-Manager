@@ -31,12 +31,12 @@ function Login () {
       if (token) {
         localStorage.setItem('access_token', token)
 
-        localStorage.setItem('user',  JSON.stringify(res.data.userData))
+        localStorage.setItem('user', JSON.stringify(res.data.userData))
         navigate('/')
       }
     } catch (err) {
-      console.log("Unauthorized User")
-      alert("Unauthorized User")
+      console.log('Unauthorized User')
+      alert('Unauthorized User')
     }
   }
   return (
@@ -61,14 +61,19 @@ function Login () {
             {...form.getInputProps('password')}
           />
 
-          <NavLink label='Forgot Passwrord?' 
-          // onClick={
-          //   navigate('/findemail')
-          // }
+          <NavLink
+            label='Forgot Passwrord?'
+            onClick={() => navigate('/findemail')}
           ></NavLink>
 
           <Group position='center' mt='md'>
             <Button type='submit'>Login</Button>
+          </Group>
+          <Group>
+            <div className='signup-link'>
+              <span>Don't have an account?</span>
+              <button onClick={() => navigate('/signup')}>Sign Up</button>
+            </div>
           </Group>
         </form>
       </Paper>

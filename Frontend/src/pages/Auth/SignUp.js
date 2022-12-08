@@ -85,6 +85,12 @@ function SignUp () {
           <Group position='center' mt='md'>
             <Button type='submit'>Submit</Button>
           </Group>
+          <Group>
+            <div className='signup-link'>
+              <span>Already have an account?</span>
+              <button onClick={() => navigate('/login')}>Login</button>
+            </div>
+          </Group>
         </form>
       </Paper>
     </div>

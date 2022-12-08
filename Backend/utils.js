@@ -1,26 +1,34 @@
-// using Twilio SendGrid's v3 Node.js Library
-// https://github.com/sendgrid/sendgrid-nodejs
-// javascript
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+const nodemailer = require('nodemailer')
 
-
-const sendEmail = () =>{
-    const msg = {
-        to: 'sunmbalsophie@gmail.com', // Change to your recipient
-        from: process.env.SENDGRID_VERIFIED_SENDER, // Change to your verified sender
-        subject: 'Sending with SendGrid is Fun',
-        text: 'and easy to do anywhere, even with Node.js',
-        html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+// async..await is not allowed in global scope, must use a wrapper
+async function sendEmail (data) {
+  try {
+    console.log("I'm inside sendEmail")
+    const {body, subject, to} = data
+    console.log(body, subject, to)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
       }
-      sgMail
-        .send(msg)
-        .then(() => {
-          console.log('Email sent')
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+    })
+
+    send()
+
+    async function send () {
+      const result = await transporter.sendMail({
+        from: 'sunmbal@techdots.dev',
+        to,
+        subject,
+        html: body
+      })
+
+      console.log(JSON.stringify(result, null, 4))
+    }
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-module.exports = sendEmail;
+module.exports = sendEmail

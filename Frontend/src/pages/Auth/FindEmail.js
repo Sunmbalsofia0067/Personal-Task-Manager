@@ -23,8 +23,8 @@ function FindEmail() {
   const sendResetPasswordLink = async({email}) =>{
     console.log(email)
     const sendLink = await axios.post('http://localhost:3001/users/sendpasslink', {email})
+    form.setValues({ email: '' })
     console.log(sendLink)
-
   }
     return (  
         <div className='auth-container'>
